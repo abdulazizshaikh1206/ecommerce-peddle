@@ -1,6 +1,6 @@
 import express from "express";
-import { createPost, updateProduct } from "../controllers/product";
-import { body, check } from "express-validator";
+import { createPost, getProducts, updateProduct } from "../controllers/product";
+import { body, check, query } from "express-validator";
 
 const router = express.Router();
 
@@ -24,6 +24,13 @@ router.put(
     return true;
   }),
   updateProduct
+);
+
+router.get(
+  "/",
+  query("sortOrder").optional().isIn(["ASC", "DESC"]),
+  query("sortBy").optional().isIn(["name", "brand"]),
+  getProducts
 );
 
 const validateUpc12Number = (value: any) => {

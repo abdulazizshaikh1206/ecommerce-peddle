@@ -58,3 +58,23 @@ export const updateProduct = async (req: Request, res: Response, next: any) => {
     next(err);
   }
 };
+
+export const getProducts = async (req: Request, res: Response, next: any) => {
+  try {
+    const validationRes = validationResult(req);
+    if (!validationRes.isEmpty()) {
+      return res.status(400).json({ errors: validationRes.array() });
+    }
+
+    const { sortBy = "name", sortOrder = "ASC" } = req.query;
+    const products = await Product.find({
+      order: {
+        [sortBy as string]: sortOrder as "ASC" | "DESC",
+      },
+    });
+    res.status(200).json(products);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
