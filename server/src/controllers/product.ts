@@ -23,3 +23,38 @@ export const createPost = async (req: Request, res: Response, next: any) => {
     next(err);
   }
 };
+
+export const updateProduct = async (req: Request, res: Response, next: any) => {
+  try {
+    const validationRes = validationResult(req);
+    if (!validationRes.isEmpty()) {
+      return res.status(400).json({ errors: validationRes.array() });
+    }
+
+    const { productId } = req.params;
+
+    let product = await Product.findOne({ where: { id: +productId } });
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: `product with id ${productId} not found` });
+    }
+
+    const { name, brandName, upc12Number } = req.body;
+    if (name) {
+      product.name = name;
+    }
+    if (brandName) {
+      product.brand = brandName;
+    }
+    if (upc12Number) {
+      product.upc12Number = upc12Number;
+    }
+    product = await product.save();
+
+    res.status(200).json(product);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
