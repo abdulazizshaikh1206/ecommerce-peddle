@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
-import { AppDataSource } from "./config/db";
+import cors from "cors";
 
+import { AppDataSource } from "./config/db";
 import productRouter from "./routes/product";
 
 dotenv.config();
@@ -11,6 +12,11 @@ const main = async () => {
 
   await AppDataSource.initialize();
 
+  app.use(
+    cors({
+      origin: "*",
+    })
+  );
   app.use(express.json());
 
   app.use("/products", productRouter);
