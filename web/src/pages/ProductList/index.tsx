@@ -1,6 +1,5 @@
 import {
   Button,
-  Card,
   Paper,
   Table,
   TableBody,
@@ -49,10 +48,17 @@ const ProductList: React.FC<ProductListInput> = () => {
   };
 
   return (
-    <Card
-      variant="outlined"
-      className="max-w-screen-xl min-h-screen px-5 mx-auto"
-    >
+    <div>
+      <h1 className="text-2xl mt-4 flex justify-between">
+        <div>Products</div>
+        <Button
+          variant="contained"
+          className="w-32"
+          onClick={() => navigate("./new")}
+        >
+          Create
+        </Button>
+      </h1>
       <SearchBar search={setSearchKey} />
       <div className="mt-10 mb-8 h-full">
         {isFetching ? (
@@ -143,8 +149,8 @@ const ProductList: React.FC<ProductListInput> = () => {
             />{" "}
           </>
         ) : null}
-      </div>
-    </Card>
+      </div>{" "}
+    </div>
   );
 };
 

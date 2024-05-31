@@ -10,7 +10,6 @@ const SearchBar: React.FC<SearchBarInput> = ({ search }) => {
 
   return (
     <div className="my-4">
-      <h1 className="text-2xl">Products</h1>
       <div className="flex mt-4">
         <input
           type="text"
@@ -20,7 +19,7 @@ const SearchBar: React.FC<SearchBarInput> = ({ search }) => {
           onChange={(e) => setSearchText(e.target.value)}
         />
         <Button
-          variant="contained"
+          variant="outlined"
           color="info"
           className="w-32"
           onClick={() => search(searchText)}

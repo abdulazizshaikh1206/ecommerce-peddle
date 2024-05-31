@@ -24,3 +24,27 @@ export const getProducts = async (
     return err;
   }
 };
+
+export const createProduct = async (
+  name: string,
+  brandName: string,
+  upc12Number: number
+) => {
+  try {
+    const res = await fetch(`${baseUrl}/products`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        brandName,
+        upc12Number,
+      }),
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
