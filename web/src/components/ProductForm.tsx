@@ -4,14 +4,19 @@ import { Form, Formik } from "formik";
 import React from "react";
 import * as Yup from "yup";
 
-import InputField from "../components/InputField";
-import { createProduct as createProductHelper } from "../services/product";
-import { Product } from "../models/product";
 import { useNavigate } from "react-router-dom";
+import InputField from "../components/InputField";
+import { Product } from "../models/product";
+import {
+  createProduct as createProductHelper,
+  updateProduct as updateProductHelper,
+} from "../services/product";
 
-interface ProductFormProps {}
+interface ProductFormProps {
+  product?: Product;
+}
 
-const ProductForm: React.FC<ProductFormProps> = () => {
+const ProductForm: React.FC<ProductFormProps> = ({ product }) => {
   const validationSchema = Yup.object().shape({
     brandName: Yup.string().required("Brand Name is required"),
     name: Yup.string().required("Product Name is required"),
@@ -28,25 +33,52 @@ const ProductForm: React.FC<ProductFormProps> = () => {
     mutationFn: ({ name, brandName, upc12Number }) =>
       createProductHelper(name, brandName, upc12Number),
   });
+
+  const { mutate: updateProduct, isPending: isUpdatePending } = useMutation<
+    Product,
+    Error,
+    { id: number; name?: string; brandName?: string; upc12Number?: number }
+  >({
+    mutationFn: ({ id, name, brandName, upc12Number }) =>
+      updateProductHelper(id, name, brandName, upc12Number),
+  });
+
   const navigate = useNavigate();
 
   return (
     <Formik
-      initialValues={{
-        brandName: "",
-        name: "",
-        upc12Number: "",
-      }}
+      initialValues={
+        product
+          ? {
+              brandName: product.brand,
+              name: product.name,
+              upc12Number: product.upc12Number,
+            }
+          : {
+              brandName: "",
+              name: "",
+              upc12Number: "",
+            }
+      }
       validationSchema={validationSchema}
       onSubmit={(values) => {
-        createProduct(
-          { ...values, upc12Number: +values.upc12Number },
-          {
+        const valuesToSend = { ...values, upc12Number: +values.upc12Number };
+        if (product) {
+          updateProduct(
+            { id: product.id, ...valuesToSend },
+            {
+              onSuccess() {
+                navigate("/products");
+              },
+            }
+          );
+        } else {
+          createProduct(valuesToSend, {
             onSuccess() {
               navigate("/products");
             },
-          }
-        );
+          });
+        }
       }}
     >
       <Form>
@@ -59,10 +91,22 @@ const ProductForm: React.FC<ProductFormProps> = () => {
         <div className="mb-8">
           <InputField type="number" label="UPC12 Number" name="upc12Number" />
         </div>
-        <div className="mt-8 text-center">
+        <div className="mt-8 flex justify-center">
           <Button type="submit" className="w-32" variant="contained">
-            {isPending ? "Loading" : "Save"}
+            {isPending || isUpdatePending ? "Loading" : "Save"}
           </Button>
+          {product && (
+            <div className="ml-6">
+              <Button
+                onClick={() => navigate("/products")}
+                type="submit"
+                className="w-32"
+                variant="outlined"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
         </div>
       </Form>
     </Formik>

@@ -48,3 +48,44 @@ export const createProduct = async (
     return err;
   }
 };
+
+export const updateProduct = async (
+  productId: number,
+  name?: string,
+  brandName?: string,
+  upc12Number?: number
+) => {
+  try {
+    const body: { [key: string]: string | number } = {};
+    if (name) body.name = name;
+    if (brandName) body.brandName = brandName;
+    if (name) body.upc12Number = upc12Number as number;
+
+    const res = await fetch(`${baseUrl}/products/${productId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getProduct = async (productId: number) => {
+  try {
+    const res = await fetch(`${baseUrl}/products/${productId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
