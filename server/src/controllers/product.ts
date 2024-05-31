@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+import { ILike } from "typeorm";
 import { validationResult } from "express-validator";
+
 import { Product } from "../entities/product";
 
 export const createPost = async (req: Request, res: Response, next: any) => {
@@ -66,7 +68,7 @@ export const getProducts = async (req: Request, res: Response, next: any) => {
       return res.status(400).json({ errors: validationRes.array() });
     }
 
-    const { sortBy = "name", sortOrder = "ASC" } = req.query;
+    const { sortBy = "name", sortOrder = "ASC", searchKey = "" } = req.query;
     let page = 1;
     let size = 10;
     if (req.query.page) {
@@ -76,6 +78,10 @@ export const getProducts = async (req: Request, res: Response, next: any) => {
       size = +req.query.size;
     }
     const products = await Product.find({
+      where: [
+        { name: ILike(`%${searchKey}%`) },
+        { brand: ILike(`%${searchKey}%`) },
+      ],
       order: {
         [sortBy as string]: sortOrder as "ASC" | "DESC",
       },
