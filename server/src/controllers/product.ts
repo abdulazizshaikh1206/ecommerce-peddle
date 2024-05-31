@@ -77,7 +77,7 @@ export const getProducts = async (req: Request, res: Response, next: any) => {
     if (req.query.size) {
       size = +req.query.size;
     }
-    const products = await Product.find({
+    const [products, totalCount] = await Product.findAndCount({
       where: [
         { name: ILike(`%${searchKey}%`) },
         { brand: ILike(`%${searchKey}%`) },
@@ -88,7 +88,10 @@ export const getProducts = async (req: Request, res: Response, next: any) => {
       take: size,
       skip: (page - 1) * size,
     });
-    res.status(200).json(products);
+    res.status(200).json({
+      products,
+      total: totalCount,
+    });
   } catch (err) {
     console.log(err);
     next(err);
