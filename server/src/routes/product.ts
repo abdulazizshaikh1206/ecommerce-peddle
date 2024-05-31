@@ -1,6 +1,12 @@
 import express from "express";
-import { createPost, getProducts, updateProduct } from "../controllers/product";
-import { body, check, query } from "express-validator";
+import { body, check, param, query } from "express-validator";
+
+import {
+  createPost,
+  getProduct,
+  getProducts,
+  updateProduct,
+} from "../controllers/product";
 
 const router = express.Router();
 
@@ -34,6 +40,8 @@ router.get(
   query("size").optional().isInt(),
   getProducts
 );
+
+router.get("/:productId", param("productId").exists().isInt(), getProduct);
 
 const validateUpc12Number = (value: any) => {
   if (typeof value !== "number") {

@@ -97,3 +97,28 @@ export const getProducts = async (req: Request, res: Response, next: any) => {
     next(err);
   }
 };
+
+export const getProduct = async (req: Request, res: Response, next: any) => {
+  try {
+    const validationRes = validationResult(req);
+    if (!validationRes.isEmpty()) {
+      return res.status(400).json({ errors: validationRes.array() });
+    }
+
+    const { productId } = req.params;
+    const product = await Product.findOne({
+      where: {
+        id: +(productId as string),
+      },
+    });
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: `Product with id ${productId} not found` });
+    }
+    res.status(200).json(product);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
