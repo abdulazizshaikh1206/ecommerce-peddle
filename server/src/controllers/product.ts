@@ -67,10 +67,20 @@ export const getProducts = async (req: Request, res: Response, next: any) => {
     }
 
     const { sortBy = "name", sortOrder = "ASC" } = req.query;
+    let page = 1;
+    let size = 10;
+    if (req.query.page) {
+      page = +req.query.page;
+    }
+    if (req.query.size) {
+      size = +req.query.size;
+    }
     const products = await Product.find({
       order: {
         [sortBy as string]: sortOrder as "ASC" | "DESC",
       },
+      take: size,
+      skip: (page - 1) * size,
     });
     res.status(200).json(products);
   } catch (err) {

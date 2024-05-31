@@ -30,6 +30,8 @@ router.get(
   "/",
   query("sortOrder").optional().isIn(["ASC", "DESC"]),
   query("sortBy").optional().isIn(["name", "brand"]),
+  query("page").optional().isInt(),
+  query("size").optional().isInt(),
   getProducts
 );
 
